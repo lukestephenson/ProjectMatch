@@ -2,6 +2,8 @@ package com.gdg.london.match;
 
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 public class UserDetailsModel {
 
 	private String name;
@@ -32,6 +34,7 @@ public class UserDetailsModel {
 	public void setTechs(String techs) {
 		this.techs = techs;
 	}
+	@JsonIgnore
 	public String getSummary() {
 		
 		return appendNotNull(name,type,speciality,techs);

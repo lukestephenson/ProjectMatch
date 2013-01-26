@@ -170,7 +170,7 @@ public class UserDetailsActivity extends Activity {
 				byte[] buffer = new byte[512];
 				int bytesRead=0;
 				while ((bytesRead=input.read(buffer)) != -1) {
-					dataRead.write(buffer);
+					dataRead.write(buffer, 0, bytesRead);
 				}
 				uid = new String(dataRead.toByteArray());
 			}catch (IOException e){
