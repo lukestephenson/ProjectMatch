@@ -36,7 +36,7 @@ public class UserDetailsActivity extends Activity {
 	public static String UID_KEY="com.gdg.london.match.UID_PREF";
 	public static String TEAM_KEY="com.gdg.london.match.TEAM_PREF";
 	
-	private String name = "luke";
+	private String name;
 	private String type;
 	private String speciality;
 	private String techs;
@@ -65,7 +65,8 @@ public class UserDetailsActivity extends Activity {
 			
 			new UploadTask().execute(paramsToJson());
 //			serverUid = "TODO";
-//			new RetreiveTeamTask().execute(serverUid);
+		} else if (hasTeamInfo) {
+			new RetreiveTeamTask().execute(serverUid);
 		}
 //		findViewById(R.id.user_img).setVisibility(View.GONE);
 		
@@ -131,11 +132,15 @@ public class UserDetailsActivity extends Activity {
 		editor.putString(TYPE_KEY, type) ;
 		editor.putString(SPEC_KEY, speciality);
 		editor.putString(TECHS_KEY, techs);
+		editor.putBoolean(UPLOAD_KEY, isWaitingUpload);
 		editor.apply();
 	}
 	
 	private String paramsToJson() {
+		SharedPreferences prefs = SharedPrefsHelper.getPrefs(getApplicationContext());
+		String gcmKey = prefs.getString(GCMIntentService.GCM_KEY, "");
 		UserDetailsModel userDetails = new UserDetailsModel();
+		userDetails.setGcmKey(gcmKey);
 		userDetails.setName(name);
 		userDetails.setSpeciality(speciality);;
 		userDetails.setTechs(techs);
@@ -153,6 +158,8 @@ public class UserDetailsActivity extends Activity {
 
 		@Override
 		protected String doInBackground(String... params) {
+			
+			
 			String json = params[0];
 			String uid = null;
 			try{
@@ -160,6 +167,7 @@ public class UserDetailsActivity extends Activity {
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setDoOutput(true);
 				conn.setFixedLengthStreamingMode(json.getBytes().length);
+				conn.setRequestProperty("content-type", "application/json");
 				OutputStream outputStream = conn.getOutputStream();
 				outputStream.write(json.getBytes());
 				
@@ -176,6 +184,13 @@ public class UserDetailsActivity extends Activity {
 			}catch (IOException e){
 				throw new RuntimeException(e);
 			}
+			
+//			try {
+//				Thread.sleep(10000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			return uid;
 		}
 
@@ -186,6 +201,8 @@ public class UserDetailsActivity extends Activity {
 			serverUid = result;
 			isWaitingUpload = false;
 			storePrefs();
+			
+//			new RetreiveTeamTask().execute(serverUid);
 		}
 		
 	}

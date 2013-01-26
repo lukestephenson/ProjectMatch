@@ -10,6 +10,15 @@ public class UserDetailsModel {
 	private String type;
 	private String speciality;
 	private String techs;
+	private String gcmKey;
+	
+	
+	public String getGcmKey() {
+		return gcmKey;
+	}
+	public void setGcmKey(String gcmKey) {
+		this.gcmKey = gcmKey;
+	}
 	public String getName() {
 		return name;
 	}

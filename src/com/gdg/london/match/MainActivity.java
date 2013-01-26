@@ -23,12 +23,15 @@ import com.example.android.wizardpager.wizard.model.ReviewItem;
 import com.example.android.wizardpager.wizard.ui.PageFragmentCallbacks;
 import com.example.android.wizardpager.wizard.ui.ReviewFragment;
 import com.example.android.wizardpager.wizard.ui.StepPagerStrip;
+import com.google.android.gcm.GCMRegistrar;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -36,6 +39,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,6 +175,18 @@ public class MainActivity extends FragmentActivity implements
 
         onPageTreeChanged();
         updateBottomBar();
+        
+        GCMRegistrar.checkDevice(this);
+        GCMRegistrar.checkManifest(this);
+        final String regId = GCMRegistrar.getRegistrationId(this);
+        if (regId == null || regId.equals("")) {
+          GCMRegistrar.register(this, "1053818023671");
+        } else {
+    		SharedPreferences prefs = SharedPrefsHelper.getPrefs(getApplicationContext());
+    		Editor edit = prefs.edit();
+    		edit.putString(GCMIntentService.GCM_KEY, regId);
+    		edit.apply();
+        }
     }
 
     @Override
